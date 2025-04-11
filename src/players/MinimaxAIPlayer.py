@@ -24,7 +24,7 @@ class MinimaxAIPlayer(Player):
             max_depth: int,
             heuristic: Heuristic,
             history_size: int = 10,
-            verbose=True,
+            verbose=False,
             title: str = None
     ):
         # Sets up multiprocessing

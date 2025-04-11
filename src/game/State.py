@@ -17,6 +17,9 @@ class State:
     mode: int = Step.END  # the mode of the last action applied
     peg: Tuple[Optional[int], Optional[int]] = (None, None)  # the peg that was moved in the last action
 
+    def copy(self):
+        return State(self.board, self.player, self.mode, self.peg)
+
     def __str__(self):
         return f"board:\n{self.board}\nplayer: {self.player} mode: {self.mode} peg: {self.peg}"
 
