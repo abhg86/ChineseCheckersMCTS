@@ -62,7 +62,7 @@ class ChineseCheckers(GameProblem):
             for j in range(board.board_size):
                 if board.matrix[i][j] == state.player:
                     yield from self._peg_actions(state, (i, j))
-    
+
     def forward_actions(self, state: State) -> Iterable[Action]:
         """
         Generate possible actions that makes the player move forward for the current state
@@ -74,15 +74,13 @@ class ChineseCheckers(GameProblem):
         for i in range(board.board_size):
             for j in range(board.board_size):
                 if board.matrix[i][j] == state.player:
-                    for action in self._peg_actions(state, (i,j)):
+                    for action in self._peg_actions(state, (i, j)):
                         # print(action)
-                        if state.player==1:
-                            if action.dest[0]<action.src[0] or action.dest[1]>action.src[1] \
-                                or (action.step_type==Step.END):
+                        if state.player == 1:
+                            if action.dest[1] >= action.src[1]:
                                 yield action
                         else:
-                            if action.dest[0]>action.src[0] or action.dest[1]<action.src[1] \
-                                or (action.step_type==Step.END):
+                            if action.dest[1] <= action.src[1]:
                                 yield action
 
     def result(self, state: State, action: Action) -> State:

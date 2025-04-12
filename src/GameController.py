@@ -42,7 +42,7 @@ def create_player(
             problem, max_player, max_depth=depth, heuristic=heuristic, verbose=False
         )
     elif player_type == "MCTS":
-        return MCTSPlayer(nb)
+        return MCTSPlayer(nb, heuristic=heuristic)
     elif player_type == "GRAVE":
         return GRAVEPlayer(nb)
     else:

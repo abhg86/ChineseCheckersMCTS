@@ -7,6 +7,7 @@ class GameProblem(ABC):
     """
     Abstract class that represents a problem to be solved by an AI.
     """
+
     @cached_property
     def initial_state(self):
         raise NotImplementedError

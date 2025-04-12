@@ -21,7 +21,11 @@ class Tournament:
         p2_times = []  # To accumulate average turn times for player 2.
 
         for i in range(1, self.num_games + 1):
-            start_time = time.perf_counter()
+            # For the first 50 games, force forward moves:
+            if i <= 50:
+                self.controller.players[0].force_forward_moves = True
+            else:
+                self.controller.players[0].force_forward_moves = False
             # run_single_game() is assumed to return a dict with keys:
             # "winner", "turns", "duration", "avg_time_p1", "avg_time_p2", "final_state"
             game_data = self.controller.run_single_game()
@@ -82,7 +86,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--second-player",
         choices=["minimax", "random", "nonrepeatrandom", "MCTS", "GRAVE"],
-        default="MCTS",
+        default="minimax",
         help="Type of the second player.",
     )
     parser.add_argument(
@@ -95,7 +99,7 @@ if __name__ == "__main__":
         "--no_gui", action="store_false", help="Disable Graphical interface"
     )
     parser.add_argument(
-        "--nb", type=int, default=128, help="Number of playouts done by MCTS"
+        "--nb", type=int, default=8, help="Number of playouts done by MCTS"
     )
     parser.add_argument(
         "--num_games", type=int, default=200, help="Number of games in the tournament"
