@@ -2,6 +2,7 @@ import time
 
 from benchmarking.GameAnalytics import GameAnalytics
 from game_problem.GameProblem import GameProblem
+from players.GRAVEPlayer import GRAVEPlayer
 from players.MCTSPlayer import MCTSPlayer
 from players.NonRepeatRandomPlayer import NonRepeatingRandomPlayer
 from game_problem.Heuristic import WeightedHeuristic, SumOfPegsInCornerHeuristic, AverageManhattanToCornerHeuristic, \
@@ -26,6 +27,8 @@ def create_player(player_type, depth=6, gui=None, problem=None, max_player=None,
         return MinimaxAIPlayer(problem, max_player, max_depth=depth, heuristic=heuristic, verbose=False)
     elif player_type == 'MCTS':
         return MCTSPlayer(nb)
+    elif player_type == 'GRAVE':
+        return GRAVEPlayer(nb)
     else:
         raise ValueError("Unsupported player type")
 
@@ -163,7 +166,7 @@ class GameController:
         else:
             player1_depth = args.first_minimax_depth if args.first_player == 'minimax' else None
             player2_depth = args.second_minimax_depth if args.second_player == 'minimax' else None
-            nb = args.nb if (args.first_player == 'MCTS' or args.second_player == 'MCTS') else None
+            nb = args.nb if (args.first_player in ['MCTS', 'GRAVE'] or args.second_player in ['MCTS', 'GRAVE']) else None
             player1 = create_player(args.first_player, depth=player1_depth, gui=self.gui,
                                     problem=self.problem, max_player=1, heuristic=default_heuristic, nb=nb)
             player2 = create_player(args.second_player, depth=player2_depth, gui=self.gui,
