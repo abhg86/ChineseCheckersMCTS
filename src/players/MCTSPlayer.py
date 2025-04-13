@@ -87,6 +87,29 @@ class MCTSPlayer(Player):
         return problem.utility(new_state, state.player)
 
     @staticmethod
+    def heuristic_playout(
+        problem: GameProblem, state: State, heuristic: Heuristic
+    ) -> int:
+        """
+        Conducts a rollout by always choosing the move that maximizes the heuristic evaluation.
+        This replaces the random selection of moves with a deterministic (greedy) heuristic policy.
+        """
+        new_state = state.copy()
+        while not problem.terminal_test(new_state):
+            legal_moves = list(problem.actions(new_state))
+            if not legal_moves:
+                break  # no moves available, though normally terminal_test should catch this
+            # Choose the move which results in the best heuristic evaluation.
+            best_move = max(
+                legal_moves,
+                key=lambda move: heuristic.eval(
+                    problem.result(new_state, move), new_state.player
+                ),
+            )
+            new_state = problem.result(new_state, best_move)
+        return problem.utility(new_state, state.player)
+
+    @staticmethod
     def minimax_playout(self, problem: GameProblem, state: State) -> int:
         # Define a depth limit for minimax simulation; you can tune this value.
         MINIMAX_DEPTH = 3
@@ -129,7 +152,7 @@ class MCTSPlayer(Player):
                     Q = wi / ni
                     if state.player == 2:
                         Q = 1 - Q
-                    val = Q + 0.4 * sqrt(log(n) / ni)
+                    val = Q + 0.9 * sqrt(log(n) / ni)
                 if val > bestValue:
                     bestValue = val
                     best = i
@@ -143,7 +166,7 @@ class MCTSPlayer(Player):
             return res
         else:
             self.T.add(state)
-            return MCTSPlayer.minimax_playout(self, problem, state)
+            return MCTSPlayer.heuristic_playout(problem, state, self.heuristic)
 
     def get_action(self, problem: GameProblem, state: State) -> Action:
         for i in range(self.nb):
