@@ -48,7 +48,7 @@ class MCTSPlayer(Player):
         while not problem.terminal_test(new_state):
             action = random.choice(list(problem.actions(new_state)))
             new_state = problem.result(new_state, action)
-        return problem.utility(new_state, state.player)
+        return (problem.utility(new_state, state.player) + 1) / 2
     
     @staticmethod
     def forward_playout(problem: GameProblem, state: State) -> int:
@@ -60,7 +60,7 @@ class MCTSPlayer(Player):
                 moves = list(problem.actions(new_state))
             action = random.choice(moves)
             new_state = problem.result(new_state, action)
-        return problem.utility(new_state, state.player)
+        return (problem.utility(new_state, state.player) + 1) / 2
     
     def search(self,  problem: GameProblem, state: State):
         if problem.terminal_test(state):

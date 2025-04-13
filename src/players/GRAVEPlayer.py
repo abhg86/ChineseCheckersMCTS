@@ -63,10 +63,10 @@ class GRAVEPlayer(Player):
             action = random.choice(list(problem.actions(new_state)))
             new_state = problem.result(new_state, action)
             played.append(self.T.tocode(action))
-        return problem.utility(new_state, state.player)
+        return (problem.utility(new_state, state.player) + 1) / 2
     
-    @staticmethod
-    def forward_playout(problem: GameProblem, state: State) -> int:
+    
+    def forward_playout(self, problem: GameProblem, state: State, played) -> int:
         new_state=state.copy()
         while not problem.terminal_test(new_state):
             moves = list(problem.forward_actions(new_state))
@@ -75,7 +75,8 @@ class GRAVEPlayer(Player):
                 moves = list(problem.actions(new_state))
             action = random.choice(moves)
             new_state = problem.result(new_state, action)
-        return problem.utility(new_state, state.player)
+            played.append(self.T.tocode(action))
+        return (problem.utility(new_state, state.player) + 1) / 2
     
     def searchGRAVE(self,  problem: GameProblem, state: State, played, tref):
         if problem.terminal_test(state):
