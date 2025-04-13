@@ -64,7 +64,7 @@ class MCTSPlayer(Player):
     
     def search(self,  problem: GameProblem, state: State):
         if problem.terminal_test(state):
-            return problem.utility(state, state.player)
+            return (problem.utility(state, state.player) + 1) / 2
         t = self.T.look(state)
         if t != None:
             bestValue = 0

@@ -10,13 +10,14 @@ from game_problem.Heuristic import WeightedHeuristic, SumOfPegsInCornerHeuristic
     AverageEuclideanToEachCornerHeuristic, AverageManhattanToEachCornerHeuristic
 from players.GraphicsHumanPlayer import GraphicsHumanPlayer
 from players.MinimaxAIPlayer import MinimaxAIPlayer
+from players.PPAPlayer import PPAPlayer
 from players.RandomPlayer import RandomPlayer
 from game_problem.ChineseCheckers import ChineseCheckers
 from game.Graphics import Graphics
 from utils import play_beep
 
 
-def create_player(player_type, depth=6, gui=None, problem=None, max_player=None, heuristic=None, nb = None):
+def create_player(player_type, player_nb, depth=6, gui=None, problem=None, max_player=None, heuristic=None, nb = None):
     if player_type == 'human':
         return GraphicsHumanPlayer(gui)
     elif player_type == 'random':
@@ -29,6 +30,8 @@ def create_player(player_type, depth=6, gui=None, problem=None, max_player=None,
         return MCTSPlayer(nb)
     elif player_type == 'GRAVE':
         return GRAVEPlayer(nb)
+    elif player_type == 'PPA':
+        return PPAPlayer(nb, player_nb)
     else:
         raise ValueError("Unsupported player type")
 
@@ -166,10 +169,10 @@ class GameController:
         else:
             player1_depth = args.first_minimax_depth if args.first_player == 'minimax' else None
             player2_depth = args.second_minimax_depth if args.second_player == 'minimax' else None
-            nb = args.nb if (args.first_player in ['MCTS', 'GRAVE'] or args.second_player in ['MCTS', 'GRAVE']) else None
-            player1 = create_player(args.first_player, depth=player1_depth, gui=self.gui,
+            nb = args.nb if (args.first_player in ['MCTS', 'GRAVE', 'PPA'] or args.second_player in ['MCTS', 'GRAVE', 'PPA']) else None
+            player1 = create_player(args.first_player, 1, depth=player1_depth, gui=self.gui,
                                     problem=self.problem, max_player=1, heuristic=default_heuristic, nb=nb)
-            player2 = create_player(args.second_player, depth=player2_depth, gui=self.gui,
+            player2 = create_player(args.second_player, 2, depth=player2_depth, gui=self.gui,
                                     problem=self.problem, max_player=2, heuristic=default_heuristic, nb=nb)
             self.players.append(player1)
             self.players.append(player2)

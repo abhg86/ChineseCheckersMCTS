@@ -77,11 +77,13 @@ class ChineseCheckers(GameProblem):
                     for action in self._peg_actions(state, (i,j)):
                         # print(action)
                         if state.player==1:
-                            if action.dest[0]<action.src[0] or action.dest[1]>action.src[1] \
-                                or (action.step_type==Step.END):
+                            if ((action.dest[0]<action.src[0] and action.dest[1]>=action.src[1]) \
+                                or (action.dest[0]<=action.src[0]and action.dest[1]>action.src[1]) \
+                                or (action.step_type==Step.END)):
                                 yield action
                         else:
-                            if action.dest[0]>action.src[0] or action.dest[1]<action.src[1] \
+                            if (action.dest[0]>action.src[0] and action.dest[1]<=action.src[1]) \
+                                or (action.dest[0]>=action.src[0] and action.dest[1]<action.src[1]) \
                                 or (action.step_type==Step.END):
                                 yield action
 
