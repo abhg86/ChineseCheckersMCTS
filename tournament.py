@@ -53,7 +53,7 @@ class Tournament:
             table = self.controller.players[0].T.T
 
             # Print a few sample state entries.
-            sample_entries = list(table.items())[:50]
+            sample_entries = list(table.items())[:1]
             for idx, (state_hash, entry) in enumerate(sample_entries):
                 total_visits = entry[0]
                 move_visits = entry[1]
