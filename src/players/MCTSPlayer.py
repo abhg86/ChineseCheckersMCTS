@@ -63,7 +63,7 @@ class MCTSPlayer(Player):
         self.T = TranspositionTable(MaxLegalMoves)
         self.nb = nb  # number of playouts per move
         self.force_forward_moves = False  # New flag: if True, use only forward moves
-        self.use_minimax_rollout = True  # New flag: if True, use minimax for playouts
+        self.use_minimax_rollout = False  # New flag: if True, use minimax for playouts
         self.heuristic = heuristic
 
     @staticmethod

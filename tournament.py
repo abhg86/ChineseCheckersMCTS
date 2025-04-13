@@ -50,6 +50,21 @@ class Tournament:
             )
             self.results.append(game_data)
 
+            table = self.controller.players[0].T.T
+
+            # Print a few sample state entries.
+            sample_entries = list(table.items())[:50]
+            for idx, (state_hash, entry) in enumerate(sample_entries):
+                total_visits = entry[0]
+                move_visits = entry[1]
+                wins = entry[2]
+                # You might also print the visited flags (entry[3]) if needed.
+                print(f"\nSample Entry {idx + 1}:")
+                print(f"State hash: {state_hash}")
+                print(f"  Total visits: {total_visits}")
+                print(f"  Move visits: {move_visits}")
+                print(f"  Win totals  : {wins}")
+
         avg_turns = total_turns / self.num_games if self.num_games > 0 else 0
         avg_duration = total_duration / self.num_games if self.num_games > 0 else 0
         overall_avg_p1 = sum(p1_times) / len(p1_times) if p1_times else None
