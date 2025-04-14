@@ -14,6 +14,7 @@ from players.PPAPlayer import PPAPlayer
 from players.RandomPlayer import RandomPlayer
 from game_problem.ChineseCheckers import ChineseCheckers
 from game.Graphics import Graphics
+from players.fwdMCTSPlayer import fwdMCTSPlayer
 from utils import play_beep
 
 
@@ -27,11 +28,13 @@ def create_player(player_type, player_nb, depth=6, gui=None, problem=None, max_p
     elif player_type == 'minimax':
         return MinimaxAIPlayer(problem, max_player, max_depth=depth, heuristic=heuristic, verbose=False)
     elif player_type == 'MCTS':
-        return MCTSPlayer(nb)
+        return MCTSPlayer(nb, player_nb)
     elif player_type == 'GRAVE':
-        return GRAVEPlayer(nb)
+        return GRAVEPlayer(nb, player_nb)
     elif player_type == 'PPA':
         return PPAPlayer(nb, player_nb)
+    elif player_type == 'fwdMCTS':
+        return fwdMCTSPlayer(nb, player_nb)
     else:
         raise ValueError("Unsupported player type")
 
@@ -169,7 +172,7 @@ class GameController:
         else:
             player1_depth = args.first_minimax_depth if args.first_player == 'minimax' else None
             player2_depth = args.second_minimax_depth if args.second_player == 'minimax' else None
-            nb = args.nb if (args.first_player in ['MCTS', 'GRAVE', 'PPA'] or args.second_player in ['MCTS', 'GRAVE', 'PPA']) else None
+            nb = args.nb if (args.first_player in ['MCTS', 'GRAVE', 'PPA', 'fwdMCTS'] or args.second_player in ['MCTS', 'GRAVE', 'PPA','fwdMCTS']) else None
             player1 = create_player(args.first_player, 1, depth=player1_depth, gui=self.gui,
                                     problem=self.problem, max_player=1, heuristic=default_heuristic, nb=nb)
             player2 = create_player(args.second_player, 2, depth=player2_depth, gui=self.gui,

@@ -50,12 +50,13 @@ class GRAVEPlayer(Player):
     Random player (confused AI) - selects an action randomly from the list of valid actions
     """
 
-    def __init__(self, nb, MaxLegalMoves=60, BoardLength=7, min_visit=50):
+    def __init__(self, nb, player, MaxLegalMoves=60, BoardLength=7, min_visit=50):
         super().__init__()
         self._player_type = 'GRAVE'
         self.T = TranspositionTableAMAF(MaxLegalMoves, BoardLength)
         self.nb = nb                    # number of playouts done before choosing a move
         self.min_visit = min_visit      # GRAVE hyperparameter
+        self.player == player
 
     def playoutAMAF(self, problem: GameProblem, state: State, played) -> int:
         new_state=state.copy()
@@ -63,10 +64,10 @@ class GRAVEPlayer(Player):
             action = random.choice(list(problem.actions(new_state)))
             new_state = problem.result(new_state, action)
             played.append(self.T.tocode(action))
-        return (problem.utility(new_state, state.player) + 1) / 2
+        return (problem.utility(new_state, state.player) + 1) / 2, played
     
     
-    def forward_playout(self, problem: GameProblem, state: State, played) -> int:
+    def forward_playoutAMAF(self, problem: GameProblem, state: State, played) -> int:
         new_state=state.copy()
         while not problem.terminal_test(new_state):
             moves = list(problem.forward_actions(new_state))
@@ -76,11 +77,11 @@ class GRAVEPlayer(Player):
             action = random.choice(moves)
             new_state = problem.result(new_state, action)
             played.append(self.T.tocode(action))
-        return (problem.utility(new_state, state.player) + 1) / 2
+        return (problem.utility(new_state, state.player) + 1) / 2, played
     
     def searchGRAVE(self,  problem: GameProblem, state: State, played, tref):
         if problem.terminal_test(state):
-            return (problem.utility(state, state.player) + 1) / 2
+            return (problem.utility(state, self.player) + 1) / 2, []
         t = self.T.look(state)
         if t != None:
             tr = tref
@@ -106,11 +107,10 @@ class GRAVEPlayer(Player):
                     Q = 1
                     if ni > 0:
                         Q = wi / ni
-                        if state.player == 2:
+                        if state.player != self.player:
                             Q = 1 - Q
-                        # print(val)
                     AMAF = wAMAF / nAMAF
-                    if state.player == 2:
+                    if state.player != self.player:
                         AMAF = 1 - AMAF
                     val = (1.0 - beta)*Q + beta*AMAF
 
@@ -118,24 +118,21 @@ class GRAVEPlayer(Player):
                     bestValue = val
                     best = i
                     bestcode = code
-            # print("#######################")
-            # print(bestValue)
-            # print(state.board)
+
             state = problem.result(state, moves[best])
             played.append(bestcode)
-            # print(state.board)
-            # print(moves)
             t[3][best] = True                   # Useless to visit same node twice in a same descent
             res = self.searchGRAVE(problem, state, played, tr)
             t[3][best] = False
             t [0] += 1
             t [1] [best] += 1
-            t [2] [best] += res
-            self.T.updateAMAF(t, played, res)
+            t [2] [best] += res[0]
+            played = res[1]
+            self.T.updateAMAF(t, played, res[0])
             return res
         else:
             self.T.addAMAF(state)
-            return self.playoutAMAF(problem, state, played)
+            return self.forward_playoutAMAF(problem, state, played)
 
     def get_action(self, problem: GameProblem, state: State) -> Action:
         self.T.addAMAF(state)

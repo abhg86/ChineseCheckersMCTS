@@ -36,11 +36,12 @@ class MCTSPlayer(Player):
     Random player (confused AI) - selects an action randomly from the list of valid actions
     """
 
-    def __init__(self, nb, MaxLegalMoves=60):
+    def __init__(self, nb, player, MaxLegalMoves=60):
         super().__init__()
         self._player_type = 'MCTS'
         self.T = TranspositionTable(MaxLegalMoves)
         self.nb = nb                    # number of playouts done before choosing a move
+        self.player = player
 
     @staticmethod
     def playout(problem: GameProblem, state: State) -> int:
@@ -64,7 +65,7 @@ class MCTSPlayer(Player):
     
     def search(self,  problem: GameProblem, state: State):
         if problem.terminal_test(state):
-            return (problem.utility(state, state.player) + 1) / 2
+            return (problem.utility(state, self.player) + 1) / 2
         t = self.T.look(state)
         if t != None:
             bestValue = 0
@@ -80,7 +81,7 @@ class MCTSPlayer(Player):
                     val = -val
                 elif ni > 0:
                     Q = wi / ni
-                    if state.player == 2:
+                    if state.player != self.player:
                         Q = 1 - Q
                     val = Q + 0.4 * sqrt (log (n) / ni)
                     # print(val)
