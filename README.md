@@ -1,48 +1,29 @@
-# Chinese Checkers Game AI
+# Chinese Checkers MCTS Implementation
 
-This project implements a Chinese Checkers game that can be played in various modes, including against different types of AI players and a human player via a graphical user interface (GUI). The game supports command-line arguments to specify the player types and, for AI players using the Minimax algorithm, the depth of the search.
+This repository contains an implementation of Monte Carlo Tree Search (MCTS) applied to Chinese Checkers. It features several enhancements and experimental refinements, including forward-move restrictions, GRAVE (Generalized Rapid Action Value Estimation), and heuristic/minimax-based playout policies. Due to high computational complexity and lengthy games, we used a simplified setting with a two-player variant. Base implementation is forked from https://github.com/Zedrichu/Chinese-Checkers-AI.git
 
-## Installation
+## Repository Structure
 
-Before running the game, ensure you have Python installed on your system. This game has been tested with Python 3.12+.
+- **`src/`**  
+  Contains the source code for the game, search algorithms, and player types:
+  - **`GameController.py`** – Manages game setup, player initialization, game loop, and tournament runs.
+  - **`players/`** – Contains different player implementations:
+    - `MCTSPlayer.py` – Classic MCTS with various enhancements.
+    - `GRAVEPlayer.py`, `PPAPlayer.py`, `fwdMCTSPlayer.py` – Other variants incorporating GRAVE, policy adaptations, or forward-only constraints.
+    - `MinimaxAIPlayer.py`, `RandomPlayer.py`, `NonRepeatRandomPlayer.py` – Baseline opponents.
+    - `GraphicsHumanPlayer.py` – For interactive, GUI-based play.
+  - **`game_problem/`** – Contains game-specific logic for Chinese Checkers:
+    - `ChineseCheckers.py` – Defines board initialization, move legality, terminal states, etc.
+    - `Heuristic.py` – Implements various heuristic evaluation functions (e.g., distance-based measures).
+    - `GameProblem.py` – Common interfaces and definitions used throughout the project.
+  - **`game/`** – Lower-level game definitions (e.g., `Board.py`, `State.py`, `Action.py`).
 
-Clone the repository to your local machine:
-```bash
-git clone https://github.com/Zedrichu/Chinese-Checkers-AI.git
-cd chinese-checkers
-```
+- **Tournament Runner**  
+  A separate script `tournament.py` orchestrates repeated game simulations for evaluation. It tracks metrics such as game duration, turns played, winners, and prints sample entries from the transposition table for debugging.
 
-## Usage
+## Running in Tournament Mode
 
-To start the game, navigate to the project directory and run `main.py` with Python, specifying the options for the first and second players.
+   Use the provided command-line interface to specify player types and settings:
 
-```bash
-python main.py --first-player <player_type> --second-player <player_type> [options]
-```
-
-## Player types
-- `human`: A human player using the graphical user interface.
-- `random`: An AI player that chooses moves randomly.
-- `nonrepeatrandom`: An AI player that chooses moves randomly without repeating the last move.
-- `minimax`: An AI player that uses the Minimax algorithm with optional depth specification.
-
-## Options
-- `--first-minimax-depth <depth>`: Specifies the depth of the Minimax search for the first player. Only required if the first player is minimax. Default is 6.
-- `--second-minimax-depth <depth>`: Specifies the depth of the Minimax search for the second player. Only required if the second player is minimax. Default is 6.
-
-## Examples
-Start a game with a human player against a Minimax AI player with a depth of 4:
-```bash
-python main.py --first-player human --second-player minimax --second-minimax-depth 4
-```
-
-Start a game between a Minimax AI player with a default depth of 6 and a standard random AI player:
-
-```bash
-python main.py --first-player minimax --second-player random
-```
-
-#### Project completed in course 02180 Introduction to Artificial Intelligence @ Technical University of Denmark 
-<img src="https://user-images.githubusercontent.com/65953954/120001846-7f05f180-bfd4-11eb-8c11-2379a547dc9f.jpg" alt="drawing" width="100"/>
-
-
+   ```bash
+   python tournament.py --first-player PPA --second-player minimax --nb 1014 --num_games 200
